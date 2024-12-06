@@ -1,0 +1,52 @@
+.login-page{
+    height: 100%;
+    text-align: center;
+    margin-top: -21px;
+    background-image: url('../../assets/laundrr-background-washingmachine.jpeg');
+    background-image: cover;
+}
+.login-card{
+    border: 2px solid rgb(134, 134, 145);
+    margin-left: 200px;
+    margin-right: 200px;
+    margin-top: -20px;
+    background-color: rgb(222, 203, 203);
+    background-image: url('../../assets/background-main-page.jpg');
+    background-size: cover;
+    background-position: 140px;
+    padding-left: -50px;
+}
+
+.app-title{
+    text-decoration: dashed;
+    font-style: oblique;
+    padding: 10px 10px 10px 10px;
+    color: rgb(40, 36, 36);
+}
+
+.login-types{
+    color: rgb(156, 138, 114);
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.login-item{
+    margin: 0px 200px 5px 200px;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+}
+
+p{
+    color: rgb(67, 64, 65);
+}
+
+.login-link{
+    text-decoration: none;
+    margin: 500px 0px 0px 0px;
+    color: #8d3250;
+}

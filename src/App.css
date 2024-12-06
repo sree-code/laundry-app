@@ -1,0 +1,34 @@
+/* App.css */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background-color: #ffffff;
+}
+
+.header,
+.footer {
+  background-color: #f8f9fa;
+  padding: 10px;
+  text-align: center;
+}
+
+.header {
+  flex: 0 0 50px;
+  background-color: rgb(82, 185, 208);
+  /* Header takes 50px height */
+}
+
+.footer {
+  flex: 0 0 30px;
+  /* Footer takes 30px height */
+}
+
+.main {
+  flex: 1;
+  /* Main content takes the remaining space */
+  padding: 20px;
+  background-color: #e9ecef;
+  overflow-y: auto;
+}
