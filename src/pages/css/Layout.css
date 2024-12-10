@@ -1,0 +1,22 @@
+/* Layout.css */
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.main-content {
+    padding: 20px;
+    margin-top: 60px;
+    /* Adjust this value based on the height of your Navbar */
+    width: calc(100% - 40px);
+    /* Adjust this value based on the padding/margin of your Navbar */
+    box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+    .main-content {
+        width: calc(100% - 60px);
+        /* Adjust this value based on the padding/margin of your Navbar */
+    }
+}
