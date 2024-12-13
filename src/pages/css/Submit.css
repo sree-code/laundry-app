@@ -1,0 +1,69 @@
+
+/* ...existing code... */
+
+.schedule-pickup {
+  padding: 20px;
+}
+
+.schedule-pickup h2 {
+  text-align: center;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.item h3 {
+  margin: 0;
+}
+
+.item button {
+  width: 30px;
+  height: 30px;
+}
+
+.address {
+  margin-top: 20px;
+}
+
+.address h3 {
+  margin-bottom: 5px;
+}
+
+.address textarea {
+  width: 100%;
+  height: 100px;
+}
+
+.add-to-cart {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.add-to-cart:hover {
+  background-color: #0056b3;
+}
+
+.submit-button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.submit-button:hover {
+  background-color: #218838;
+}
