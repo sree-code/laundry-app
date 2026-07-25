@@ -1,15 +1,27 @@
-import Database from 'better-sqlite3';
+import { createClient } from '@libsql/client';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { mkdirSync } from 'fs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const dbPath = join(__dirname, 'cricket.db');
 
-const db = new Database(dbPath);
-db.pragma('journal_mode = WAL');
-db.pragma('foreign_keys = ON');
+function getClient() {
+  const url = process.env.TURSO_DATABASE_URL;
+  const authToken = process.env.TURSO_AUTH_TOKEN;
 
-db.exec(`
+  if (url && authToken) {
+    return createClient({ url, authToken });
+  }
+
+  const dataDir = join(__dirname, '..', 'data');
+  mkdirSync(dataDir, { recursive: true });
+  return createClient({ url: `file:${join(dataDir, 'cricket.db')}` });
+}
+
+const client = getClient();
+let initialized = false;
+
+const SCHEMA = `
   CREATE TABLE IF NOT EXISTS members (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
@@ -46,6 +58,39 @@ db.exec(`
 
   CREATE INDEX IF NOT EXISTS idx_members_name ON members(name);
   CREATE INDEX IF NOT EXISTS idx_weekends_date ON weekends(date);
-`);
+`;
 
-export default db;
+export async function initDb() {
+  if (initialized) return;
+  await client.executeMultiple(SCHEMA);
+  initialized = true;
+}
+
+function rowToObject(row) {
+  const obj = {};
+  for (const [key, value] of Object.entries(row)) {
+    obj[key] = value;
+  }
+  return obj;
+}
+
+export async function queryAll(sql, args = []) {
+  const result = await client.execute({ sql, args });
+  return result.rows.map(rowToObject);
+}
+
+export async function queryOne(sql, args = []) {
+  const result = await client.execute({ sql, args });
+  return result.rows[0] ? rowToObject(result.rows[0]) : null;
+}
+
+export async function run(sql, args = []) {
+  const result = await client.execute({ sql, args });
+  return { changes: result.rowsAffected };
+}
+
+export async function batch(statements) {
+  await client.batch(statements, 'write');
+}
+
+export default client;

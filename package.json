@@ -13,7 +13,7 @@
     "test": "node --test server/teamGenerator.test.js"
   },
   "dependencies": {
-    "better-sqlite3": "^11.7.0",
+    "@libsql/client": "^0.14.0",
     "concurrently": "^9.1.0",
     "cors": "^2.8.5",
     "express": "^4.21.1",
