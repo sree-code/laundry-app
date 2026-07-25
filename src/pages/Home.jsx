@@ -1,64 +1,87 @@
-import React, { useState, useEffect } from "react";
-import "./css/Home.css";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { api, getNextSaturday } from '../api';
 
-const bannerImages = [
-  "https://services4sure.in/wp-content/uploads/2018/08/washing-machine-banner.jpg",
-];
+export default function Home() {
+  const [stats, setStats] = useState({ members: 0, available: 0, teamsReady: false });
+  const [weekendTitle, setWeekendTitle] = useState('');
+  const [loading, setLoading] = useState(true);
 
-const servicesData = {
-  services: ["WASH & IRON", "WASH & FOLD", "DRY CLEANING", "IRONING"],
-};
+  useEffect(() => {
+    async function load() {
+      try {
+        const members = await api.getMembers();
+        const saturday = getNextSaturday();
+        const weekend = await api.createWeekend(saturday);
+        setWeekendTitle(weekend.title);
 
-function Home() {
-  const [currentImage, setCurrentImage] = useState(0);
+        const available = await api.getAvailability(weekend.id);
+        const teams = await api.getTeams(weekend.id);
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setCurrentImage((prevImage) => (prevImage + 1) % bannerImages.length);
-  //   }, 10000); // Changes image every 5 seconds
-  //   return () => clearInterval(interval); // Cleanup on component unmount
-  // }, []);
+        setStats({
+          members: members.length,
+          available: available.length,
+          teamsReady: teams.generated,
+        });
+      } catch {
+        /* ignore */
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
 
-  const serviceRoutes = {
-    "WASH & IRON": "/wash-iron",
-    "WASH & FOLD": "/wash-fold",
-    "DRY CLEANING": "/dry-cleaning",
-    IRONING: "/ironing",
-  };
+  if (loading) return <p className="page-subtitle">Loading...</p>;
 
   return (
-    <div className="home-container">
-      {/* Scrolling Banner */}
-      <div className="scrolling-banner">
-        <img src={bannerImages[0]} alt={`Banner ${currentImage + 1}`} />
+    <div>
+      <h2 className="page-title">Welcome to Weekend Cricket</h2>
+      <p className="page-subtitle">
+        {weekendTitle ? `Next match: ${weekendTitle}` : 'Manage your weekend cricket group'}
+      </p>
+
+      <div className="stats-grid">
+        <div className="stat-card">
+          <div className="number">{stats.members}</div>
+          <div className="label">Total Members</div>
+        </div>
+        <div className="stat-card">
+          <div className="number">{stats.available}</div>
+          <div className="label">Available This Weekend</div>
+        </div>
+        <div className="stat-card">
+          <div className="number">{stats.teamsReady ? '✓' : '—'}</div>
+          <div className="label">Teams Generated</div>
+        </div>
       </div>
 
-      <h1 className="home-title">Our Services</h1>
-      <div className="services-grid">
-        {servicesData.services.map((service, index) => (
-          <Link
-            to={serviceRoutes[service]}
-            key={index}
-            className="service-card"
-          >
-            <div className="service-name">{service}</div>
-          </Link>
-        ))}
+      <div className="card">
+        <h2>How it works</h2>
+        <div className="steps">
+          <div className="step">
+            <div className="step-num">1</div>
+            <h3>Add members</h3>
+            <p>Everyone registers with name, role, and skill level (1–5).</p>
+          </div>
+          <div className="step">
+            <div className="step-num">2</div>
+            <h3>Mark availability</h3>
+            <p>Each weekend, players tap to say they're coming.</p>
+          </div>
+          <div className="step">
+            <div className="step-num">3</div>
+            <h3>Generate teams</h3>
+            <p>One tap splits everyone into two balanced teams.</p>
+          </div>
+        </div>
       </div>
-      <div>
-        <header>Our Services</header>
-        <strong>
-          Laundry services provide convenient solutions for individuals,
-          businesses, and organizations to clean and maintain garments and
-          textiles. These services range from basic washing and drying to more
-          specialized offerings, such as stain removal, dry cleaning, and
-          ironing. The key goal is to save time, effort, and resources for
-          customers while ensuring clothes are well cared for.
-        </strong>
+
+      <div className="actions-bar" style={{ marginTop: '1.5rem' }}>
+        <Link to="/members" className="btn btn-primary">Add Members</Link>
+        <Link to="/weekend" className="btn btn-secondary">Mark Availability</Link>
+        <Link to="/teams" className="btn btn-secondary">View Teams</Link>
       </div>
     </div>
   );
 }
-
-export default Home;
