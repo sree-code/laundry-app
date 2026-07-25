@@ -1,34 +1,42 @@
-import React, { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
-import Home from "./pages/Home";
-import Navbar from "./pages/Navbar";
-import Footer from "./pages/Footer";
-import Login from "./pages/LoginRegister.jsx";
-
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Cart from "./pages/Cart.jsx";
-import Layout from "./Layout.jsx";
-import Ironing from "./pages/Ironing.jsx";
-import SchedulePickup from "./pages/SchedulePickup";
-import Submit from "./pages/Submit";
+import { Routes, Route, NavLink } from 'react-router-dom';
+import Home from './pages/Home';
+import Members from './pages/Members';
+import Weekend from './pages/Weekend';
+import Teams from './pages/Teams';
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <Layout>
-      <Routes>
-        <Route path="/" exact element={<Home />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/ironing" element={<Ironing />} />
-        <Route path="/schedule-pickup/:vendorId" element={<SchedulePickup />} />
-        <Route path="/submit" element={<Submit />} />
-      </Routes>
-    </Layout>
+    <div className="app">
+      <header className="header">
+        <div className="header-inner">
+          <div className="brand">
+            <span className="brand-icon">🏏</span>
+            <div>
+              <h1>Weekend Cricket</h1>
+              <p>Team manager for your weekend matches</p>
+            </div>
+          </div>
+          <nav className="nav">
+            <NavLink to="/" end>Home</NavLink>
+            <NavLink to="/members">Members</NavLink>
+            <NavLink to="/weekend">This Weekend</NavLink>
+            <NavLink to="/teams">Teams</NavLink>
+          </nav>
+        </div>
+      </header>
+      <main className="main">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/members" element={<Members />} />
+          <Route path="/weekend" element={<Weekend />} />
+          <Route path="/teams" element={<Teams />} />
+        </Routes>
+      </main>
+      <footer className="footer">
+        Share this link with your group — everyone can add their details each weekend.
+      </footer>
+    </div>
   );
 }
 
