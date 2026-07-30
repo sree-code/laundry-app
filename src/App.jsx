@@ -1,35 +1,42 @@
-import React, { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
-import Home from "./pages/Home";
-import Navbar from "./pages/Navbar";
-import Footer from "./pages/Footer";
-import Login from "./pages/LoginRegister.jsx";
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import { ProtectedRoute, GuestRoute } from './components/ProtectedRoute';
+import Layout from './components/Layout';
 
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Cart from "./pages/Cart.jsx";
-import Layout from "./Layout.jsx";
-import Ironing from "./pages/Ironing.jsx";
-import SchedulePickup from "./pages/SchedulePickup";
-import Submit from "./pages/Submit";
+import Login from './pages/Login';
+import Register from './pages/Register';
+import UserDashboard from './pages/UserDashboard';
+import UserMatches from './pages/UserMatches';
+import MatchDetail from './pages/MatchDetail';
+import Profile from './pages/Profile';
 
-function App() {
-  const [count, setCount] = useState(0);
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminMatches from './pages/admin/AdminMatches';
+import AdminTeams from './pages/admin/AdminTeams';
+import AdminGround from './pages/admin/AdminGround';
+import AdminUsers from './pages/admin/AdminUsers';
 
+export default function App() {
   return (
-    <Layout>
+    <AuthProvider>
       <Routes>
-        <Route path="/" exact element={<Home />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/ironing" element={<Ironing />} />
-        <Route path="/schedule-pickup/:vendorId" element={<SchedulePickup />} />
-        <Route path="/submit" element={<Submit />} />
+        <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
+        <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
+
+        <Route path="/dashboard" element={<ProtectedRoute><Layout><UserDashboard /></Layout></ProtectedRoute>} />
+        <Route path="/matches" element={<ProtectedRoute><Layout><UserMatches /></Layout></ProtectedRoute>} />
+        <Route path="/matches/:id" element={<ProtectedRoute><Layout><MatchDetail /></Layout></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><Layout><Profile /></Layout></ProtectedRoute>} />
+
+        <Route path="/admin" element={<ProtectedRoute adminOnly><Layout><AdminDashboard /></Layout></ProtectedRoute>} />
+        <Route path="/admin/matches" element={<ProtectedRoute adminOnly><Layout><AdminMatches /></Layout></ProtectedRoute>} />
+        <Route path="/admin/teams" element={<ProtectedRoute adminOnly><Layout><AdminTeams /></Layout></ProtectedRoute>} />
+        <Route path="/admin/ground" element={<ProtectedRoute adminOnly><Layout><AdminGround /></Layout></ProtectedRoute>} />
+        <Route path="/admin/users" element={<ProtectedRoute adminOnly><Layout><AdminUsers /></Layout></ProtectedRoute>} />
+
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
-    </Layout>
+    </AuthProvider>
   );
 }
-
-export default App;
