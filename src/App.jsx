@@ -1,43 +1,42 @@
-import { Routes, Route, NavLink } from 'react-router-dom';
-import Home from './pages/Home';
-import Members from './pages/Members';
-import Weekend from './pages/Weekend';
-import Teams from './pages/Teams';
-import './App.css';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import { ProtectedRoute, GuestRoute } from './components/ProtectedRoute';
+import Layout from './components/Layout';
 
-function App() {
+import Login from './pages/Login';
+import Register from './pages/Register';
+import UserDashboard from './pages/UserDashboard';
+import UserMatches from './pages/UserMatches';
+import MatchDetail from './pages/MatchDetail';
+import Profile from './pages/Profile';
+
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminMatches from './pages/admin/AdminMatches';
+import AdminTeams from './pages/admin/AdminTeams';
+import AdminGround from './pages/admin/AdminGround';
+import AdminUsers from './pages/admin/AdminUsers';
+
+export default function App() {
   return (
-    <div className="app">
-      <header className="header">
-        <div className="header-inner">
-          <div className="brand">
-            <span className="brand-icon">🏏</span>
-            <div>
-              <h1>Weekend Cricket</h1>
-              <p>Team manager for your weekend matches</p>
-            </div>
-          </div>
-          <nav className="nav">
-            <NavLink to="/" end>Home</NavLink>
-            <NavLink to="/members">Members</NavLink>
-            <NavLink to="/weekend">This Weekend</NavLink>
-            <NavLink to="/teams">Teams</NavLink>
-          </nav>
-        </div>
-      </header>
-      <main className="main">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/members" element={<Members />} />
-          <Route path="/weekend" element={<Weekend />} />
-          <Route path="/teams" element={<Teams />} />
-        </Routes>
-      </main>
-      <footer className="footer">
-        Share this link with your group — everyone can add their details each weekend.
-      </footer>
-    </div>
+    <AuthProvider>
+      <Routes>
+        <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
+        <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
+
+        <Route path="/dashboard" element={<ProtectedRoute><Layout><UserDashboard /></Layout></ProtectedRoute>} />
+        <Route path="/matches" element={<ProtectedRoute><Layout><UserMatches /></Layout></ProtectedRoute>} />
+        <Route path="/matches/:id" element={<ProtectedRoute><Layout><MatchDetail /></Layout></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><Layout><Profile /></Layout></ProtectedRoute>} />
+
+        <Route path="/admin" element={<ProtectedRoute adminOnly><Layout><AdminDashboard /></Layout></ProtectedRoute>} />
+        <Route path="/admin/matches" element={<ProtectedRoute adminOnly><Layout><AdminMatches /></Layout></ProtectedRoute>} />
+        <Route path="/admin/teams" element={<ProtectedRoute adminOnly><Layout><AdminTeams /></Layout></ProtectedRoute>} />
+        <Route path="/admin/ground" element={<ProtectedRoute adminOnly><Layout><AdminGround /></Layout></ProtectedRoute>} />
+        <Route path="/admin/users" element={<ProtectedRoute adminOnly><Layout><AdminUsers /></Layout></ProtectedRoute>} />
+
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </AuthProvider>
   );
 }
-
-export default App;

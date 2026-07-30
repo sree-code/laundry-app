@@ -1,54 +1,105 @@
-# Weekend Cricket
+# Weekend Cricket v2
 
-A simple web app to manage your weekend cricket group — add members, mark who's playing each weekend, and auto-generate two balanced teams.
+Admin + player portal for weekend cricket groups (50+ members).
 
-Built for groups of **50+ players** with a lightweight SQLite backend.
+## Admin Login Credentials
+
+| Field | Value |
+|-------|-------|
+| **Username** | `cricketadmin` |
+| **Password** | `WkndCricket@Admin2026` |
+
+> Change these in production via environment variables `ADMIN_USERNAME` and `ADMIN_PASSWORD`.
+
+---
 
 ## Features
 
-- **Members** — Add everyone with name, phone, role (batsman/bowler/all-rounder/wicket-keeper), and skill level (1–5)
-- **This Weekend** — Each player taps to mark availability for the upcoming Saturday
-- **Teams** — One-click generation of two skill-balanced teams with full player details
+### Admin (you)
+- Login with admin credentials above
+- **Schedule matches** — Saturday, Sunday & holidays only
+- **Assign ground blocker** — see who booked the ground
+- **Generate teams** — auto-balance two teams by skill
+- **Manage holidays** — add public holidays for weekday matches
+- **View all players** — everyone who registered
 
-## Quick Start
+### Players (your group)
+- Register at `/register` with their own username & password
+- Login and update profile (name, role, skill)
+- Mark availability for scheduled matches
+- View generated teams
+
+---
+
+## Quick Start (Local)
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open **http://localhost:3000** in your browser. Share the link with your group on match day.
+- App: http://localhost:3000
+- API: http://localhost:3001/api
 
-## Production
+Login as admin with credentials above.
+
+---
+
+## Deploy to Vercel (Get Public URL)
+
+### Step 1 — Turso Database (free)
 
 ```bash
-npm run build
-npm start
+# Install: https://docs.turso.tech/cli/installation
+turso auth login
+turso db create weekend-cricket
+turso db show weekend-cricket --url
+turso db tokens create weekend-cricket
 ```
 
-The server runs on port **3001** by default (serves the built frontend + API). Set `PORT` to change it.
+### Step 2 — Push to GitHub
 
-## How team balancing works
+```bash
+git init
+git add .
+git commit -m "Weekend Cricket"
+gh repo create weekend-cricket --public --source=. --push
+```
 
-1. Wicket keepers are distributed evenly across teams
-2. Remaining players are assigned using a snake draft sorted by skill
-3. Team sizes are kept as equal as possible
+### Step 3 — Deploy on Vercel
+
+1. Go to https://vercel.com/new
+2. Import your repo
+3. Add environment variables:
+
+| Variable | Value |
+|----------|-------|
+| `TURSO_DATABASE_URL` | Your Turso URL |
+| `TURSO_AUTH_TOKEN` | Your Turso token |
+| `JWT_SECRET` | Any long random string |
+| `ADMIN_USERNAME` | `cricketadmin` |
+| `ADMIN_PASSWORD` | `WkndCricket@Admin2026` |
+
+4. Click **Deploy**
+
+Your final URL: `https://your-app-name.vercel.app`
+
+Share this URL with your 50 players on WhatsApp.
+
+---
+
+## Project Structure
+
+```
+api/          → Vercel serverless API
+server/       → Express backend + auth + database
+src/          → React frontend (dark modern UI)
+vercel.json   → Deployment config
+```
 
 ## Tech Stack
 
 - React + Vite (frontend)
-- Express + SQLite (backend)
-- No login required — everyone in your group can add and update details
-
-## API Endpoints
-
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/members` | List all members |
-| POST | `/api/members` | Add a member |
-| PATCH | `/api/members/:id` | Update a member |
-| DELETE | `/api/members/:id` | Remove a member |
-| POST | `/api/weekends` | Create/get weekend session |
-| POST | `/api/weekends/:id/availability` | Toggle player availability |
-| POST | `/api/weekends/:id/generate-teams` | Generate balanced teams |
-| GET | `/api/weekends/:id/teams` | View generated teams |
+- Express + JWT auth (backend)
+- libSQL / Turso (database)
+- Vercel (hosting)

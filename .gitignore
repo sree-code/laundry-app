@@ -1,7 +1,7 @@
 node_modules/
 dist/
-server/cricket.db
-server/cricket.db-wal
-server/cricket.db-shm
+data/
 .env
 .DS_Store
+*.zip
+.vercel

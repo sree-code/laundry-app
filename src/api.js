@@ -1,8 +1,22 @@
 const API = '/api';
 
+function getToken() {
+  return localStorage.getItem('wc_token');
+}
+
+export function setToken(token) {
+  if (token) localStorage.setItem('wc_token', token);
+  else localStorage.removeItem('wc_token');
+}
+
 async function request(path, options = {}) {
+  const token = getToken();
   const res = await fetch(`${API}${path}`, {
-    headers: { 'Content-Type': 'application/json', ...options.headers },
+  headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...options.headers,
+    },
     ...options,
   });
   const data = await res.json().catch(() => ({}));
@@ -11,36 +25,37 @@ async function request(path, options = {}) {
 }
 
 export const api = {
-  getMembers: () => request('/members'),
-  addMember: (body) => request('/members', { method: 'POST', body: JSON.stringify(body) }),
-  updateMember: (id, body) =>
-    request(`/members/${id}`, { method: 'PATCH', body: JSON.stringify(body) }),
-  deleteMember: (id) => request(`/members/${id}`, { method: 'DELETE' }),
+  login: (username, password) =>
+    request('/auth/login', { method: 'POST', body: JSON.stringify({ username, password }) }),
+  register: (body) =>
+    request('/auth/register', { method: 'POST', body: JSON.stringify(body) }),
+  me: () => request('/auth/me'),
+  updateProfile: (body) =>
+    request('/auth/profile', { method: 'PATCH', body: JSON.stringify(body) }),
 
-  getWeekends: () => request('/weekends'),
-  createWeekend: (date, title) =>
-    request('/weekends', { method: 'POST', body: JSON.stringify({ date, title }) }),
-
-  getAvailability: (weekendId) => request(`/weekends/${weekendId}/availability`),
-  setAvailability: (weekendId, memberId, available) =>
-    request(`/weekends/${weekendId}/availability`, {
+  getMatches: () => request('/matches'),
+  getHolidays: () => request('/holidays'),
+  getAvailability: (matchId) => request(`/matches/${matchId}/availability`),
+  getMyStatus: (matchId) => request(`/matches/${matchId}/my-status`),
+  setAvailability: (matchId, available) =>
+    request(`/matches/${matchId}/availability`, {
       method: 'POST',
-      body: JSON.stringify({ memberId, available }),
+      body: JSON.stringify({ available }),
     }),
+  getTeams: (matchId) => request(`/matches/${matchId}/teams`),
 
-  getTeams: (weekendId) => request(`/weekends/${weekendId}/teams`),
-  generateTeams: (weekendId) =>
-    request(`/weekends/${weekendId}/generate-teams`, { method: 'POST' }),
+  adminUsers: () => request('/admin/users'),
+  createMatch: (body) =>
+    request('/admin/matches', { method: 'POST', body: JSON.stringify(body) }),
+  updateMatch: (id, body) =>
+    request(`/admin/matches/${id}`, { method: 'PATCH', body: JSON.stringify(body) }),
+  deleteMatch: (id) => request(`/admin/matches/${id}`, { method: 'DELETE' }),
+  generateTeams: (matchId) =>
+    request(`/admin/matches/${matchId}/generate-teams`, { method: 'POST' }),
+  addHoliday: (date, name) =>
+    request('/admin/holidays', { method: 'POST', body: JSON.stringify({ date, name }) }),
+  deleteHoliday: (date) => request(`/admin/holidays/${date}`, { method: 'DELETE' }),
 };
-
-export function getNextSaturday() {
-  const today = new Date();
-  const day = today.getDay();
-  const daysUntilSaturday = day === 6 ? 0 : day === 0 ? 6 : 6 - day;
-  const saturday = new Date(today);
-  saturday.setDate(today.getDate() + daysUntilSaturday);
-  return saturday.toISOString().split('T')[0];
-}
 
 export function formatRole(role) {
   const labels = {
@@ -53,5 +68,15 @@ export function formatRole(role) {
 }
 
 export function skillStars(skill) {
-  return '★'.repeat(skill) + '☆'.repeat(5 - skill);
+  const n = Number(skill) || 0;
+  return '★'.repeat(n) + '☆'.repeat(5 - n);
+}
+
+export function dayBadge(type) {
+  const map = {
+    saturday: { label: 'Saturday', cls: 'badge-sat' },
+    sunday: { label: 'Sunday', cls: 'badge-sun' },
+    holiday: { label: 'Holiday', cls: 'badge-hol' },
+  };
+  return map[type] || { label: type, cls: 'badge-default' };
 }

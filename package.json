@@ -1,7 +1,7 @@
 {
   "name": "weekend-cricket",
   "private": true,
-  "version": "1.0.0",
+  "version": "2.0.0",
   "type": "module",
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\"",
@@ -9,14 +9,15 @@
     "server": "node server/index.js",
     "build": "vite build",
     "start": "node server/index.js",
-    "preview": "vite preview",
     "test": "node --test server/teamGenerator.test.js"
   },
   "dependencies": {
-    "better-sqlite3": "^11.7.0",
+    "@libsql/client": "^0.14.0",
+    "bcryptjs": "^2.4.3",
     "concurrently": "^9.1.0",
     "cors": "^2.8.5",
     "express": "^4.21.1",
+    "jsonwebtoken": "^9.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.28.0",
